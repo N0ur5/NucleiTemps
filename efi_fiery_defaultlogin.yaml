@@ -8,6 +8,7 @@ info:
     This template attempts authentication against the EFI Fiery Web interface using the default credentials.
   tags: csrf, auth, web
   reference:
+    - "Requires -tlsi flag if TLS issues occur."
 
 http:
   - raw:
