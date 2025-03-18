@@ -1,0 +1,46 @@
+id: sato-printer-default-login
+
+info:
+  name: SATO Label Printer Default Password Login
+  author: n0ur5
+  severity: medium
+  description: |
+    This template checks for default login access to a SATO Label Printer using the password "0310".
+    A successful login is identified if the response contains a valid "groups" field with user roles.
+  tags: printer, login, auth, sato, default-password
+  reference:
+    - "SATO Label Printer WebConfig Authentication"
+
+http:
+  - raw:
+      - |
+        POST /WebConfig/lua/auth.lua HTTP/2
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:136.0) Gecko/20100101 Firefox/136.0
+        Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+        Content-Length: 22
+
+        pw=0310&group=settings
+
+    matchers-condition: and  # Require all conditions to be met
+
+    matchers:
+      - type: status
+        status:
+          - 200  # Ensure request was successful
+
+      - type: word
+        part: body
+        words:
+          - '"groups":["user","level1","settings"]'  # Ensure a successful login
+
+      - type: word
+        part: body
+        words:
+          - '"r":0'  # Ensure response code indicates success
+
+    extractors:
+      - type: json
+        name: auth_groups
+        json:
+          - ".groups"
