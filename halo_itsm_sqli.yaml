@@ -9,7 +9,8 @@ info:
   tags: sqli,blind,time-based
 
 http:
-  - method: POST
+  - timeout: 15  # ✅ Correct placement
+    method: POST
     path:
       - "{{BaseURL}}/api/Notify"
 
@@ -30,15 +31,6 @@ http:
         "lastactiontime": "2025-03-03T11:30:00",
         "chatlog": "Sprocket Security PoC test"
       }
-
-    timeout: 15
-
-    extractors:
-      - type: dsl
-        name: duration
-        internal: true
-        dsl:
-          - duration
 
     matchers:
       - type: dsl
