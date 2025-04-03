@@ -1,16 +1,14 @@
-id: time-based-blind-sqli-delay-10s
+id: blind-sqli-time-delay
 
 info:
-  name: Time-Based Blind SQLi (10s delay)
+  name: Blind SQLi via Time Delay (10s)
   author: your-name
   severity: high
-  description: |
-    This template checks for time-based blind SQL injection using a 10-second delay via the `techid` parameter.
-  tags: sqli,blind,time-based
+  description: Detects time-based blind SQL injection using delay functions like `waitfor delay`
+  tags: sqli,blind,time-delay
 
 http:
-  - timeout: 15  # ✅ Correct placement
-    method: POST
+  - method: POST
     path:
       - "{{BaseURL}}/api/Notify"
 
@@ -34,5 +32,6 @@ http:
 
     matchers:
       - type: dsl
+        name: delay-detect
         dsl:
-          - duration >= 10
+          - read-timeout >= 10000
