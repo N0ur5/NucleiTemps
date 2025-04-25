@@ -11,10 +11,10 @@ info:
 requests:
   - method: GET
     path:
-      - "{{BaseURL}}/commandcenter/deployServiceCommcell.do"
+      - "{{BaseURL}}/webconsole/login/index.jsp"
 
     matchers:
       - type: word
         words:
-          - "></cv:cvMessages>"
+          - "vw-commvault-logo"
         part: body
