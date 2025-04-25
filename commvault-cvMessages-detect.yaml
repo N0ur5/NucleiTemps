@@ -28,7 +28,7 @@ http:
 
     payloads:
       interactsh-url:
-        - "{{interactsh-url}}"
+        - "e5kgvjvf0bbwzx0qhm29rn0rnit9hz5o.n0ur5sec.bugshieldlabs.com"
 
     attack: pitchfork
 
