@@ -1,0 +1,20 @@
+id: commvault-cvMessages-detect
+
+info:
+  name: Commvault Command Center cvMessages Exposure
+  author: naures
+  severity: info
+  description: |
+    Detects accessible /commandcenter/deployServiceCommcell.do endpoint by looking for the cvMessages tag.
+  tags: exposure,commvault
+
+requests:
+  - method: GET
+    path:
+      - "{{BaseURL}}/commandcenter/deployServiceCommcell.do"
+
+    matchers:
+      - type: word
+        words:
+          - "></cv:cvMessages>"
+        part: body
