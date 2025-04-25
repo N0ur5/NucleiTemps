@@ -16,5 +16,5 @@ requests:
     matchers:
       - type: word
         words:
-          - "Commvault Webserver"
+          - "Commvault"
         part: header
