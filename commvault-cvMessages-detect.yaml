@@ -1,20 +1,20 @@
-id: commvault-cvMessages-detect
+id: commvault-webserver-detect
 
 info:
-  name: Commvault Command Center cvMessages Exposure
+  name: Commvault Web Server Detection
   author: naures
   severity: info
   description: |
-    Detects accessible /commandcenter/deployServiceCommcell.do endpoint by looking for the cvMessages tag.
-  tags: exposure,commvault
+    Detects a Commvault Webserver instance via the Server response header.
+  tags: commvault,exposure,webserver
 
 requests:
   - method: GET
     path:
-      - "{{BaseURL}}/webconsole/login/index.jsp"
+      - "{{BaseURL}}/commandcenter/deployServiceCommcell.do"
 
     matchers:
       - type: word
         words:
-          - "vw-commvault-logo"
-        part: body
+          - "Commvault Webserver"
+        part: header
