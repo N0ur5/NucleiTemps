@@ -5,13 +5,15 @@ info:
   author: yourname
   severity: medium
   description: |
-    Detects unauthenticated access to the SAP NetWeaver Visual Composer MetadataUploader endpoint, which may indicate exposure to CVE-2025-31324.
+    Detects unauthenticated access to the SAP NetWeaver Visual Composer MetadataUploader endpoint, indicating potential exposure to CVE-2025-31324.
   tags: sap,exposure,cve,cve2025,nuclei
 
 requests:
   - method: GET
     path:
       - "{{BaseURL}}/developmentserver/metadatauploader"
+
+    matchers-condition: and   # <-- This forces BOTH conditions to match!
 
     matchers:
       - type: status
