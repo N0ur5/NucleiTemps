@@ -4,10 +4,10 @@ info:
   author: n0ur5
   severity: medium
   description: |
-    Detects potential Next.js middleware bypass vulnerabilities.
-    If a 307 redirect occurs, the same request is repeated with an 
-    injected x-middleware-subrequest header. A change in status
-    from 307 to a non-307 response indicates a possible vulnerability.
+    Detects potential Next.js middleware bypass vulnerabilities by:
+    - Sending an initial request
+    - If a 307 Redirect is received, resending with x-middleware-subrequest header
+    - Flagging if the status code changes to non-307
   reference:
     - https://slcyber.io/assetnote-security-research-center/doing-the-due-diligence-analysing-the-next-js-middleware-bypass-cve-2025-29927/
     - https://zhero-web-sec.github.io/research-and-things/nextjs-and-the-corrupt-middleware
@@ -33,8 +33,7 @@ requests:
         status:
           - 307
 
-    # If match, pipeline into second request
-    pipeline: true
+    pipeline: true  # <-- this triggers second request if first matches
 
   - method: GET
     path:
@@ -53,4 +52,4 @@ requests:
     matchers:
       - type: status
         status:
-          - "!307"  # <-- Status is NOT 307, meaning bypass is possible
+          - "!307"  # Means it is vulnerable if status is NOT 307
