@@ -1,7 +1,7 @@
-id: auth-login-bypass
+id: auth-login-bypass-generic
 
 info:
-  name: Authentication Login Attempt
+  name: Authentication Login Attempt (Generic Host)
   author: yourname
   severity: high
   description: Attempts authentication and detects successful login by missing error message or HTTP 200.
@@ -10,14 +10,14 @@ requests:
   - raw:
       - |
         POST /api/auth HTTP/1.1
-        Host: 10.10.100.18
+        Host: {{Host}}
         User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:137.0) Gecko/20100101 Firefox/137.0
         Accept: application/json, text/plain, */*
         Accept-Language: en-US,en;q=0.5
         Accept-Encoding: gzip, deflate, br
         Content-Type: multipart/form-data; boundary=----geckoformboundary716c56f4e30591f86649ac6de06b16d9
-        Origin: https://10.10.100.18
-        Referer: https://10.10.100.18/login
+        Origin: https://{{Host}}
+        Referer: https://{{Host}}/login
         Sec-Fetch-Dest: empty
         Sec-Fetch-Mode: cors
         Sec-Fetch-Site: same-origin
