@@ -13,7 +13,11 @@ http:
       - "{{BaseURL}}/sysaid/Login.jsp"
 
     matchers:
+      - type: regex
+        regex:
+          - "(?i)<title>\\s*SysAid Help Desk Software\\s*</title>"
       - type: dsl
         dsl:
           - status_code == 200
-          - contains(body, "<title>SysAid Help Desk Software</title>")
+
+    matchers-condition: and
