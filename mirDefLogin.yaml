@@ -19,6 +19,7 @@ requests:
     body: |
       login_username=Admin&login_password=admin
 
+    matchers-condition: and
     matchers:
       - type: word
         part: body
