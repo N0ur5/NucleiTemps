@@ -2,7 +2,7 @@ id: desktopmodules-dir-listing
 
 info:
   name: DesktopModules Directory Listing
-  author: your-name
+  author: n0ur5sec
   severity: low
   description: Checks for exposed directory listing at /desktopmodules/
   tags: exposure,dir-listing,iis
