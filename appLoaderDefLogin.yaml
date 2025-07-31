@@ -2,7 +2,7 @@ id: ce-login-default-check
 
 info:
   name: Check Default Login on do_login.php
-  author: naures
+  author: n0ur5
   severity: high
   description: >
     Attempts to login with default credentials to /main/do_login.php using ce_user=admin and ce_pass=admin.
