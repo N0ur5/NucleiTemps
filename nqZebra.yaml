@@ -1,0 +1,20 @@
+id: nqueue-zebraworks-authorization-detect
+
+info:
+  name: nQueue Zebraworks Authorization Page Detection
+  author: n0ur5
+  severity: info
+  description: |
+    Detects the nQueue Zebraworks Embedded Web Authorization Group Configuration
+    interface by requesting /Authorization/index and matching the distinctive page title.
+
+requests:
+  - method: GET
+    path:
+      - "{{BaseURL}}/Authorization/index"
+
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '<h2 class="content-title">nQueue Zebraworks - Embedded Web - Authorization Group Configuation</h2>'
