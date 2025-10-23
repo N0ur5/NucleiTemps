@@ -1,0 +1,32 @@
+id: moxa-min-fingerprint
+info:
+  name: Moxa Minimal Fingerprint
+  author: n0ur5
+  severity: info
+  description: Minimal non-exploit fingerprint for Moxa web UIs.
+  tags: tech,fingerprint,moxa
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/"
+
+    # stop after the first 200 OK page we fetch
+    stop-at-first-match: true
+
+    matchers-condition: or
+    matchers:
+      - type: word
+        part: body
+        words:
+          - Moxa
+          - MXView
+          - MGate
+      - type: regex
+        part: body
+        regex:
+          - '(?i)<title[^>]*>[^<]*(moxa|mxview|mgate)[^<]*</title>'
+      - type: word
+        part: header
+        words:
+          - Moxa
