@@ -1,0 +1,60 @@
+id: cisco-uwm-deflogin-302
+
+info:
+  name: UWM login accepts credentials (302) with CSRF cookie flow
+  author: n0ur5
+  severity: high
+  description: |
+    GET /login/ to extract csrftoken from Set-Cookie, then POST /login/.
+    Matches ONLY when POST returns 302 (success).
+  tags: uwm,login,csrf,default-creds
+
+variables:
+  username: "uwmadmin"
+  password: "password"
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/login/"
+    redirects: true
+    extractors:
+      - type: regex
+        part: header
+        name: csrftoken
+        internal: true
+        group: 1
+        regex:
+          - '(?i)Set-Cookie:\s*csrftoken=([^;]+)'
+
+  - method: POST
+    path:
+      - "{{BaseURL}}/login/"
+    redirects: false
+    headers:
+      Content-Type: application/x-www-form-urlencoded
+      Referer: "{{BaseURL}}/login/"
+      Origin: "{{BaseURL}}"
+      Cookie: "csrftoken={{csrftoken}}"
+
+    # Change csrf_token -> csrfmiddlewaretoken if needed
+    body: "csrf_token={{url_encode(csrftoken)}}&username={{url_encode(username)}}&password={{url_encode(password)}}&submit=Login"
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 302
+      - type: regex
+        part: header
+        regex:
+          - '(?im)^Location:\s*.+$'
+
+    # ONE extractor = ONE output line
+    extractors:
+      - type: regex
+        part: header
+        name: location
+        group: 1
+        regex:
+          - '(?im)^Location:\s*([^\r\n]+)'
