@@ -11,9 +11,16 @@
     - code: |
         let c = require('nuclei/ssh');
         let client = new c.SSHClient();
-        let connected = client.ConnectSSHInfoMode(Host, Port, Username, Password);
-        if (connected) {
-          Export({connected: "true", fingerprint: connected.fingerprint || "unknown"});
+        try {
+          let connected = client.Connect(Host, Port, Username, Password);
+          if (connected) {
+            let output = client.Run("id");
+            if (output) {
+              Export({authenticated: "true", output: output});
+            }
+          }
+        } catch (e) {
+          // Auth failed - do nothing
         }
       args:
         Host: "{{Host}}"
@@ -29,4 +36,4 @@
       extractors:
         - type: dsl
           dsl:
-            - '"Successful SSH login with virl:VIRL"'
+            - 'output'
