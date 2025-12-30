@@ -1,0 +1,32 @@
+  id: virl-default-ssh-creds
+
+  info:
+    name: Cisco VIRL - Default SSH Credentials
+    author: your-name
+    severity: critical
+    description: Detects default credentials on Cisco VIRL (virl:VIRL)
+    tags: ssh,default-login,virl,cisco,network
+
+  javascript:
+    - code: |
+        let c = require('nuclei/ssh');
+        let client = new c.SSHClient();
+        let connected = client.ConnectSSHInfoMode(Host, Port, Username, Password);
+        if (connected) {
+          Export({connected: "true", fingerprint: connected.fingerprint || "unknown"});
+        }
+      args:
+        Host: "{{Host}}"
+        Port: "22"
+        Username: "virl"
+        Password: "VIRL"
+
+      matchers:
+        - type: dsl
+          dsl:
+            - "success == true"
+
+      extractors:
+        - type: dsl
+          dsl:
+            - '"Successful SSH login with virl:VIRL"'
