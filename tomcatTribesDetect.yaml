@@ -2,7 +2,8 @@ id: tomcat-tribes-fingerprint
 
 info:
   name: Apache Tomcat Tribes - Definitive Fingerprint
-  author: pentester
+  author: n0ur5
+
   severity: high
   description: |
     Definitively fingerprints Apache Tomcat Tribes cluster receiver by sending
