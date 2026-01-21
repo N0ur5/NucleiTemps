@@ -1,0 +1,52 @@
+id: tomcat-tribes-cluster
+
+info:
+  name: Apache Tomcat Tribes Cluster Receiver
+  author: n0ur5
+  severity: high
+  description: |
+    Detects exposed Apache Tomcat Tribes cluster receiver.
+    Tribes handles session replication between Tomcat nodes.
+    Exposed receivers accept unauthenticated connections and may be
+    vulnerable to pre-auth RCE via Java deserialization attacks.
+
+    Vulnerability requires:
+    - Tribes receiver exposed to attacker (ports 4000-4003)
+    - No EncryptInterceptor configured (plaintext mode)
+
+    If EncryptInterceptor is enabled, exploitation requires the
+    pre-shared encryption key.
+
+    Scans ports: 4000, 4001, 4002, 4003 (NioReceiver defaults)
+  reference:
+    - https://tomcat.apache.org/tomcat-9.0-doc/cluster-howto.html
+    - https://tomcat.apache.org/tomcat-9.0-doc/tribes/introduction.html
+  tags: tomcat,tribes,cluster,deserialization,rce,network,exposure
+  metadata:
+    verified: true
+    shodan-query: port:4000
+    product: apache-tomcat
+
+network:
+  - inputs:
+      - data: "7fed00020000000450524f42deadbeef"
+        type: hex
+
+    host:
+      - "{{Host}}:4000"
+      - "{{Host}}:4001"
+      - "{{Host}}:4002"
+      - "{{Host}}:4003"
+
+    read-size: 256
+
+    matchers:
+      - type: dsl
+        dsl:
+          - "true"
+
+    extractors:
+      - type: dsl
+        name: tribes-endpoint
+        dsl:
+          - "host"
