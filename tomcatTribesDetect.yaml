@@ -1,35 +1,29 @@
-id: tomcat-tribes-cluster
+id: tomcat-tribes-fingerprint
 
 info:
-  name: Apache Tomcat Tribes Cluster Receiver
-  author: n0ur5
+  name: Apache Tomcat Tribes - Definitive Fingerprint
+  author: pentester
   severity: high
   description: |
-    Detects exposed Apache Tomcat Tribes cluster receiver.
-    Tribes handles session replication between Tomcat nodes.
-    Exposed receivers accept unauthenticated connections and may be
-    vulnerable to pre-auth RCE via Java deserialization attacks.
+    Definitively fingerprints Apache Tomcat Tribes cluster receiver by sending
+    a valid Tribes packet with USE_ACK option and checking for the ACK response.
 
-    Vulnerability requires:
-    - Tribes receiver exposed to attacker (ports 4000-4003)
-    - No EncryptInterceptor configured (plaintext mode)
+    This is NOT a false-positive prone port check - it validates the actual
+    Tribes protocol by triggering an ACK response that only Tribes will send.
 
-    If EncryptInterceptor is enabled, exploitation requires the
-    pre-shared encryption key.
-
-    Scans ports: 4000, 4001, 4002, 4003 (NioReceiver defaults)
+    ACK Response: FLT2002 + 00000003 + 060203 + TLF2003 (21 bytes)
   reference:
     - https://tomcat.apache.org/tomcat-9.0-doc/cluster-howto.html
-    - https://tomcat.apache.org/tomcat-9.0-doc/tribes/introduction.html
-  tags: tomcat,tribes,cluster,deserialization,rce,network,exposure
+  tags: tomcat,tribes,cluster,fingerprint,network
   metadata:
     verified: true
-    shodan-query: port:4000
     product: apache-tomcat
 
 network:
   - inputs:
-      - data: "7fed00020000000450524f42deadbeef"
+      # Valid Tribes ChannelData with USE_ACK option (0x0002)
+      # Triggers ACK response from real Tribes receivers
+      - data: "464c54323030320000007f000000020000019be20189fa0000001001010101010101010101010101010101000000525452494245532d4201000000003a00000000000003e800000fa000000000ffffffff093132372e302e302e31000000000000000000000000000000000000000000000000000000005452494245532d45010000000005aced000570544c4632303033"
         type: hex
 
     host:
@@ -38,15 +32,16 @@ network:
       - "{{Host}}:4002"
       - "{{Host}}:4003"
 
-    read-size: 256
+    read-size: 64
 
     matchers:
-      - type: dsl
-        dsl:
-          - "true"
+      # Match exact ACK response: FLT2002 + size(3) + ACK_DATA(060203) + TLF2003
+      - type: binary
+        binary:
+          - "464c543230303200000003060203544c4632303033"
 
     extractors:
       - type: dsl
-        name: tribes-endpoint
+        name: tribes-confirmed
         dsl:
-          - "host"
+          - '"CONFIRMED Tribes at " + host'
